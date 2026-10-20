@@ -1,0 +1,125 @@
+{% extends 'books/base.html' %}
+
+{% block title %}פרופיל של {{ profile_user.username }}{% endblock %}
+
+{% block content %}
+{% if profile.custom_css %}
+    <style>
+        /* --- קוד CSS אישי של המשתמש --- */
+        {{ profile.custom_css|safe }}
+    </style>
+{% endif %}
+
+<style>
+    .profile-section { margin-top: 40px; }
+    .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px; margin-top: 15px; }
+    .book-card { background: var(--nav-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; text-align: center; position: relative; }
+    .book-cover { width: 100%; height: 200px; object-fit: cover; background: #222; display: flex; align-items: center; justify-content: center; color: white; }
+    .book-info { padding: 10px; }
+    .book-title { font-weight: bold; font-size: 0.9em; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .thread-list { margin-top: 15px; }
+    .thread-item { padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 10px; background: var(--nav-bg); display: flex; justify-content: space-between; align-items: center; }
+    .thread-title { font-weight: bold; font-size: 1em; margin-bottom: 3px; display: block; }
+    .thread-meta { font-size: 0.85em; opacity: 0.7; }
+</style>
+
+<!-- אזור הפרופיל -->
+<div id="custom-profile-area" class="container">
+    
+    <!-- באנר אישי -->
+    {% if profile.banner %}
+        <div style="height: 180px; background-image: url('{{ profile.banner.url }}'); background-size: cover; background-position: center; border-radius: 8px 8px 0 0; margin: -30px -30px 20px -30px;"></div>
+    {% endif %}
+    
+    <div style="display: flex; align-items: center; gap: 20px; margin-top: 15px;">
+        <!-- תמונת פרופיל -->
+        {% if profile.avatar %}
+            <img src="{{ profile.avatar.url }}" alt="Avatar" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--link-color);">
+        {% else %}
+            <div style="width: 90px; height: 90px; border-radius: 50%; background: var(--link-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 2em; font-weight: bold; border: 3px solid var(--border-color);">
+                {{ profile_user.username|make_list|first|upper }}
+            </div>
+        {% endif %}
+        
+        <div>
+            <h1 style="margin: 0; display: inline-block;">{{ profile_user.username }}</h1>
+            <span style="font-size: 0.9em; opacity: 0.7; margin-right: 15px;">{{ profile.followers.count }} עוקבים</span>
+            
+            <!-- כפתור מעקב -->
+            {% if user.is_authenticated and user != profile_user %}
+                <form action="{% url 'toggle_follow' profile_user.username %}" method="post" style="display: inline-block; margin-right: 15px;">
+                    {% csrf_token %}
+                    {% if user in profile.followers.all %}
+                        <button type="submit" style="padding: 5px 12px; background: transparent; color: var(--text-color); border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer;">מבטל מעקב</button>
+                    {% else %}
+                        <button type="submit" style="padding: 5px 12px; background: var(--link-color); color: white; border: none; border-radius: 4px; cursor: pointer;">+ עקוב</button>
+                    {% endif %}
+                </form>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div style="margin-top: 20px; padding: 15px; background: var(--bg-color); border-radius: 6px; border: 1px solid var(--border-color);">
+        <p style="margin: 0;"><strong>סטטוס/אודות:</strong> {{ profile.bio|default:"אין סטטוס כרגע." }}</p>
+    </div>
+    
+    <!-- כפתורי פעולה למשתמש עצמו -->
+    {% if user == profile_user %}
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+            <a href="{% url 'edit_profile' %}" style="display:inline-block; padding: 8px 15px; background: var(--nav-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none;">✏️ ערוך פרופיל</a>
+            <a href="{% url 'create_book' %}" style="display:inline-block; padding: 8px 15px; background: var(--link-color); color: white; border-radius: 4px; text-decoration: none; font-weight: bold;">✍️ כתיבת ספר</a>
+        </div>
+    {% endif %}
+
+    <!-- אזור יצירות המשתמש -->
+    <div class="profile-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 5px;">
+            <h3 style="margin: 0;">📚 ספרים שפורסמו ({{ user_books.count }})</h3>
+            {% if user == profile_user %}
+                <a href="{% url 'create_book' %}" style="padding: 5px 12px; background: var(--link-color); color: white; border-radius: 4px; text-decoration: none; font-size: 0.85em;">+ כתיבת ספר</a>
+            {% endif %}
+        </div>
+        
+        <div class="grid-container">
+            {% for book in user_books %}
+                <div class="book-card">
+                    <a href="{% url 'book_detail' book.id %}">
+                        {% if book.cover %}
+                            <img src="{{ book.cover.url }}" class="book-cover" alt="{{ book.title }}">
+                        {% else %}
+                            <img src="{% static 'inkcity/cover-default.png' %}" class="book-cover" alt="Cover placeholder">
+                        {% endif %}
+                    </a>
+                    <div class="book-info">
+                        <a href="{% url 'book_detail' book.id %}" class="book-title">{{ book.title }}</a>
+                        {% if book.status == 'draft' %}
+                            <span style="display: block; font-size: 0.8em; color: #e74c3c; font-weight: bold; margin-top: 4px;">🔒 טיוטה אישית</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p style="grid-column: 1 / -1; opacity: 0.7; margin-top: 15px;">המשתמש טרם פרסם ספרים.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- אזור דיוני המשתמש -->
+    <div class="profile-section">
+        <h3 style="border-bottom: 2px solid var(--border-color); padding-bottom: 5px;">💬 דיונים בפורום ({{ user_threads.count }})</h3>
+        <div class="thread-list">
+            {% for thread in user_threads %}
+                <div class="thread-item">
+                    <div>
+                        <a href="{% url 'thread_detail' thread.id %}" class="thread-title">{{ thread.title }}</a>
+                        <div class="thread-meta">קטגוריה: <a href="{% url 'category_detail' thread.category.id %}">{{ thread.category.name }}</a></div>
+                    </div>
+                    <div class="thread-meta">{{ thread.created_at|date:"d/m/Y" }}</div>
+                </div>
+            {% empty %}
+                <p style="opacity: 0.7;">המשתמש טרם פתח דיונים בפורום.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

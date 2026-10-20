@@ -1,0 +1,15 @@
+{% extends 'books/base.html' %}
+
+{% block title %}עריכת פרופיל{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+    <h2>עריכת פרופיל</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" style="padding: 10px 20px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer;">שמור שינויים</button>
+    </form>
+    <p><a href="{% url 'profile_detail' user.username %}">ביטול</a></p>
+</div>
+{% endblock %}

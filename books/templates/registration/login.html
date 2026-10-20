@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head><title>התחברות ל-InkCity</title><style>body { font-family: Arial; margin: 40px; background: #f9f9f9; } .box { background: white; padding: 20px; border-radius: 8px; max-width: 400px; margin: auto; }</style></head>
+<body>
+    <div class="box">
+        <h2>התחברות</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">היכנס</button>
+        </form>
+        <p>עוד אין לך משתמש? <a href="{% url 'register' %}">הרשם כאן</a></p>
+        <p><a href="{% url 'home' %}">חזרה לעמוד הבית</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head><title>הוספת פרק ל-{{ book.title }}</title><style>body { font-family: Arial; margin: 40px; background: #f9f9f9; } .box { background: white; padding: 20px; border-radius: 8px; max-width: 800px; margin: auto; } input, textarea { width: 100%; margin-bottom: 15px; padding: 10px; } textarea { height: 300px; }</style></head>
+<body>
+    <div class="box">
+        <h2>הוספת פרק חדש ל"{{ book.title }}"</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">פרסם פרק</button>
+        </form>
+        <p><a href="{% url 'book_detail' book.id %}">ביטול וחזרה לספר</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{% extends 'books/base.html' %}
+
+{% block title %}{{ category.name }} - InkCity{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{% url 'forum_home' %}">← חזרה לכל הקטגוריות</a>
+    <h1>{{ category.name }}</h1>
+    <p>{{ category.description }}</p>
+
+    {% if user.is_authenticated %}
+        <p><a href="{% url 'create_thread' category.id %}" style="display:inline-block; padding: 8px 15px; background: #0066cc; color: white; border-radius: 4px;">+ פתח דיון חדש בקטגוריה זו</a></p>
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+        {% for thread in threads %}
+            <div style="padding: 12px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong><a href="{% url 'thread_detail' thread.id %}">{{ thread.title }}</a></strong>
+                    <div style="font-size: 0.85em; opacity: 0.7;">
+                        מאת: <a href="{% url 'profile_detail' thread.author.username %}">{{ thread.author.username }}</a>
+                    </div>
+                </div>
+                <span style="font-size: 0.85em; opacity: 0.7;">{{ thread.posts.count }} תגובות</span>
+            </div>
+        {% empty %}
+            <p>אין עדיין דיונים בקטגוריה זו.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

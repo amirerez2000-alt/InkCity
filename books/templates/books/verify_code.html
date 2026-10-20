@@ -1,0 +1,26 @@
+{% extends 'books/base.html' %}
+
+{% block title %}אימות חשבון - InkCity{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 450px; text-align: center;">
+    <h1 style="margin-top: 0;">🔑 אימות חשבון</h1>
+    <p>שלחנו קוד אימות בן 6 ספרות לכתובת המייל:</p>
+    <p style="font-weight: bold; font-size: 1.1em; color: var(--link-color); margin-top: -5px;">{{ email }}</p>
+
+    <form method="post" style="margin-top: 25px;">
+        {% csrf_token %}
+        <div style="margin-bottom: 20px;">
+            <input type="text" name="code" placeholder="123456" maxlength="6" required 
+                   style="font-size: 2em; letter-spacing: 10px; text-align: center; width: 230px; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--input-bg); color: var(--text-color); outline: none;">
+        </div>
+
+        <button type="submit" style="width: 100%; padding: 12px; background: var(--link-color); color: white; border: none; border-radius: 6px; font-size: 1.05em; font-weight: bold; cursor: pointer;">אימות חשבון</button>
+    </form>
+
+    <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px; font-size: 0.9em;">
+        <span>לא קיבלת את הקוד או שהתוקף פג? </span>
+        <a href="{% url 'resend_code' %}" style="font-weight: bold;">לחץ כאן לשליחה מחדש</a>
+    </div>
+</div>
+{% endblock %}

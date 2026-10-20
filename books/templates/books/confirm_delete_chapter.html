@@ -1,0 +1,17 @@
+{% extends 'books/base.html' %}
+
+{% block title %}אישור מחיקת פרק{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 500px; text-align: center;">
+    <h2 style="color: #e74c3c;">⚠️ האם אתה בטוח שברצונך למחוק פרק זה?</h2>
+    <p>אתה עומד למחוק את <strong>פרק {{ chapter.chapter_number }}: {{ chapter.title }}</strong> מתוך הספר "<strong>{{ chapter.book.title }}</strong>".</p>
+    <p style="opacity: 0.7; font-size: 0.9em;">פעולה זו היא סופית ולא ניתן לבטל אותה.</p>
+
+    <form method="post" style="margin-top: 30px; display: flex; justify-content: center; gap: 15px;">
+        {% csrf_token %}
+        <button type="submit" style="padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">כן, מחק את הפרק</button>
+        <a href="{% url 'chapter_detail' chapter.book.id chapter.chapter_number %}" style="padding: 10px 20px; background: var(--nav-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none;">ביטול</a>
+    </form>
+</div>
+{% endblock %}

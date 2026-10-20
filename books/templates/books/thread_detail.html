@@ -1,0 +1,38 @@
+{% extends 'books/base.html' %}
+
+{% block title %}{{ thread.title }} - InkCity{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{% url 'category_detail' thread.category.id %}">← חזרה לקטגוריית {{ thread.category.name }}</a>
+    <h2>{{ thread.title }}</h2>
+
+    <!-- רשימת הודעות -->
+    {% for post in posts %}
+        <div style="border: 1px solid var(--border-color); padding: 15px; border-radius: 6px; margin-bottom: 15px; background: var(--bg-color);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                {% if post.author.profile.avatar %}
+                    <img src="{{ post.author.profile.avatar.url }}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
+                {% endif %}
+                <strong><a href="{% url 'profile_detail' post.author.username %}">{{ post.author.username }}</a></strong>
+                <span style="font-size: 0.8em; opacity: 0.7;">• {{ post.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+            <p style="margin: 0;">{{ post.content|linebreaks }}</p>
+        </div>
+    {% endfor %}
+
+    <!-- טופס תגובה -->
+    {% if user.is_authenticated %}
+        <div style="margin-top: 30px;">
+            <h4>הוסף תגובה:</h4>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" style="padding: 8px 15px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer;">שלח תגובה</button>
+            </form>
+        </div>
+    {% else %}
+        <p><a href="{% url 'login' %}">התחבר</a> כדי להגיב לדיון זה.</p>
+    {% endif %}
+</div>
+{% endblock %}

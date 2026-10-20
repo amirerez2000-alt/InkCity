@@ -1,0 +1,149 @@
+{% extends 'books/base.html' %}
+{% load static %}
+
+{% block title %}עמוד הבית - InkCity{% endblock %}
+
+{% block content %}
+<style>
+    .home-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr; /* 2 חלקים לספרים, 1 חלק לסרגל צד */
+        gap: 30px;
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+    
+    @media (max-width: 900px) {
+        .home-layout { grid-template-columns: 1fr; } /* בסלולר זה יהיה אחד מתחת לשני */
+    }
+
+    .main-content { background: var(--container-bg); padding: 25px; border-radius: 8px; border: 1px solid var(--border-color); }
+    .sidebar { display: flex; flex-direction: column; gap: 20px; }
+    .sidebar-box { background: var(--container-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); }
+    
+    .book-section { margin-bottom: 40px; }
+    .book-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: thin; }
+    .book-card { min-width: 140px; max-width: 140px; background: var(--nav-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+    .book-cover { width: 100%; height: 200px; object-fit: cover; background: #222; display: flex; align-items: center; justify-content: center; color: white; text-align: center; }
+    .book-info { padding: 10px; text-align: center; }
+    .book-title { font-weight: bold; margin-bottom: 5px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.9em; }
+    .book-author { font-size: 0.8em; opacity: 0.8; }
+    
+    /* עיצוב צ'אט */
+    .chat-box { height: 250px; overflow-y: auto; background: var(--nav-bg); padding: 10px; border-radius: 4px; border: 1px solid var(--border-color); margin-bottom: 10px; display: flex; flex-direction: column-reverse; }
+    .chat-msg { font-size: 0.9em; margin-bottom: 8px; }
+</style>
+
+<div class="home-layout">
+    
+    <!-- אזור מרכזי: ספרים -->
+    <div class="main-content">
+        <h1 style="text-align: center; margin-bottom: 30px;">ברוכים הבאים ל-InkCity 📚</h1>
+        
+        <div class="book-section">
+            <h3 style="border-bottom: 2px solid var(--border-color); padding-bottom: 5px;">🔥 חמים עכשיו</h3>
+            <div class="book-scroll">
+                {% for book in trending_books %}
+                    <div class="book-card">
+                        <a href="{% url 'book_detail' book.id %}">
+                            {% if book.cover %}<img src="{{ book.cover.url }}" class="book-cover">{% else %}<img src="{% static 'inkcity/cover-default.png' %}" class="book-cover">{% endif %}
+                        </a>
+                        <div class="book-info"><a href="{% url 'book_detail' book.id %}" class="book-title">{{ book.title }}</a><div class="book-author">{{ book.author.username }}</div></div>
+                    </div>
+                {% empty %}<p>אין עדיין ספרים.</p>{% endfor %}
+            </div>
+        </div>
+
+        <div class="book-section">
+            <h3 style="border-bottom: 2px solid var(--border-color); padding-bottom: 5px;">⭐️ ספרים מובילים</h3>
+            <div class="book-scroll">
+                {% for book in top_books %}
+                    <div class="book-card">
+                        <a href="{% url 'book_detail' book.id %}">
+                            {% if book.cover %}<img src="{{ book.cover.url }}" class="book-cover">{% else %}<img src="{% static 'inkcity/cover-default.png' %}" class="book-cover">{% endif %}
+                        </a>
+                        <div class="book-info"><a href="{% url 'book_detail' book.id %}" class="book-title">{{ book.title }}</a><div class="book-author">{{ book.author.username }}</div></div>
+                    </div>
+                {% empty %}<p>אין עדיין ספרים.</p>{% endfor %}
+            </div>
+        </div>
+
+        <div class="book-section">
+            <h3 style="border-bottom: 2px solid var(--border-color); padding-bottom: 5px;">🆕 פורסמו לאחרונה</h3>
+            <div class="book-scroll">
+                {% for book in new_books %}
+                    <div class="book-card">
+                        <a href="{% url 'book_detail' book.id %}">
+                            {% if book.cover %}<img src="{{ book.cover.url }}" class="book-cover">{% else %}<img src="{% static 'inkcity/cover-default.png' %}" class="book-cover">{% endif %}
+                        </a>
+                        <div class="book-info"><a href="{% url 'book_detail' book.id %}" class="book-title">{{ book.title }}</a><div class="book-author">{{ book.author.username }}</div></div>
+                    </div>
+                {% empty %}<p>אין עדיין ספרים.</p>{% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- סרגל צד: עדכונים, צ'אט, מחוברים -->
+    <div class="sidebar">
+        
+        <!-- משתמשים מחוברים -->
+        <div class="sidebar-box">
+            <h3 style="margin-top: 0;">🟢 מחוברים עכשיו ({{ online_users.count }})</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                {% for p in online_users %}
+                    <a href="{% url 'profile_detail' p.user.username %}" title="{{ p.user.username }}">
+                        {% if p.avatar %}
+                            <img src="{{ p.avatar.url }}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #4CAF50;">
+                        {% else %}
+                            <img src="{% static 'inkcity/profile-default.png' %}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #4CAF50;">
+                        {% endif %}
+                    </a>
+                {% empty %}
+                    <span style="font-size: 0.9em; opacity: 0.7;">אין משתמשים מחוברים.</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- צ'אט גלובלי -->
+        <div class="sidebar-box">
+            <h3 style="margin-top: 0;">💬 צ'אט קהילתי</h3>
+            <div class="chat-box">
+                {% for msg in chat_messages %}
+                    <div class="chat-msg">
+                        <strong><a href="{% url 'profile_detail' msg.author.username %}">{{ msg.author.username }}</a>:</strong> 
+                        <span style="opacity: 0.9;">{{ msg.content }}</span>
+                    </div>
+                {% empty %}
+                    <p style="font-size: 0.9em; opacity: 0.7; text-align: center;">הצ'אט ריק. תגידו שלום!</p>
+                {% endfor %}
+            </div>
+            
+            {% if user.is_authenticated %}
+                <form method="post" style="display: flex; gap: 5px;">
+                    {% csrf_token %}
+                    {{ chat_form }}
+                    <button type="submit" name="send_chat" style="padding: 8px 15px; background: var(--link-color); color: white; border: none; border-radius: 4px; cursor: pointer;">שלח</button>
+                </form>
+            {% else %}
+                <p style="font-size: 0.85em;"><a href="{% url 'login' %}">התחבר</a> כדי לכתוב בצ'אט.</p>
+            {% endif %}
+        </div>
+
+        <!-- עדכוני אתר -->
+        <div class="sidebar-box">
+            <h3 style="margin-top: 0;">📢 עדכוני האתר</h3>
+            {% for update in updates %}
+                <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color);">
+                    <strong style="color: var(--link-color);">{{ update.title }}</strong>
+                    <div style="font-size: 0.8em; opacity: 0.6; margin-bottom: 5px;">{{ update.created_at|date:"d/m/Y" }}</div>
+                    <p style="font-size: 0.9em; margin: 0; opacity: 0.9;">{{ update.content }}</p>
+                </div>
+            {% empty %}
+                <p style="font-size: 0.9em; opacity: 0.7;">אין עדכונים חדשים כרגע.</p>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

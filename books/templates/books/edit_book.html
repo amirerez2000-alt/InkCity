@@ -1,0 +1,20 @@
+{% extends 'books/base.html' %}
+
+{% block title %}עריכת ספר: {{ book.title }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px;">
+    <a href="{% url 'book_detail' book.id %}">← חזרה לספר</a>
+    <h1 style="margin-top: 15px;">✏️ עריכת ספר: {{ book.title }}</h1>
+
+    <form method="post" enctype="multipart/form-data" style="margin-top: 20px;">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <div style="margin-top: 25px; display: flex; gap: 10px;">
+            <button type="submit" style="padding: 10px 20px; background: var(--link-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">שמור שינויים</button>
+            <a href="{% url 'book_detail' book.id %}" style="padding: 10px 20px; background: var(--nav-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none;">ביטול</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

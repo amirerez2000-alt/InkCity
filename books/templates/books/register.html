@@ -1,0 +1,77 @@
+{% extends 'books/base.html' %}
+
+{% block title %}הרשמה ל-InkCity{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 500px;">
+    <h1 style="text-align: center; margin-top: 0;">✨ הרשמה ל-InkCity</h1>
+    <p style="text-align: center; opacity: 0.8; margin-bottom: 25px;">הצטרף לקהילת הכותבים והקוראים שלנו!</p>
+
+    <form method="post" style="display: flex; flex-direction: column; gap: 15px;">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; font-size: 0.9em;">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">שם משתמש:</label>
+            {{ form.username }}
+            {% if form.username.errors %}<div style="color: #e74c3c; font-size: 0.85em; margin-top: 3px;">{{ form.username.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">אימייל לאישור:</label>
+            {{ form.email }}
+            {% if form.email.errors %}<div style="color: #e74c3c; font-size: 0.85em; margin-top: 3px;">{{ form.email.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">סיסמה:</label>
+            {{ form.password }}
+            {% if form.password.errors %}<div style="color: #e74c3c; font-size: 0.85em; margin-top: 3px;">{{ form.password.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">אישור סיסמה:</label>
+            {{ form.confirm_password }}
+            {% if form.confirm_password.errors %}<div style="color: #e74c3c; font-size: 0.85em; margin-top: 3px;">{{ form.confirm_password.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div style="background: var(--nav-bg); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">🤖 {{ form.bot_check.label }}</label>
+            {{ form.bot_check }}
+            <small style="display: block; opacity: 0.7; margin-top: 3px;">{{ form.bot_check.help_text }}</small>
+            {% if form.bot_check.errors %}<div style="color: #e74c3c; font-size: 0.85em; margin-top: 3px;">{{ form.bot_check.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div style="margin-top: 10px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                {{ form.terms_accepted }}
+                <span>אני מאשר/ת את <a href="#" target="_blank">תנאי השימוש</a> ואת <a href="#" target="_blank">מדיניות הפרטיות</a></span>
+            </label>
+            {% if form.terms_accepted.errors %}<div style="color: #e74c3c; font-size: 0.85em; margin-top: 3px;">{{ form.terms_accepted.errors.0 }}</div>{% endif %}
+        </div>
+
+        <button type="submit" style="margin-top: 15px; padding: 12px; background: var(--link-color); color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 1em;">צור חשבון</button>
+    </form>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 0.9em;">
+        כבר יש לך חשבון? <a href="{% url 'login' %}">התחבר כאן</a>
+    </p>
+</div>
+
+<style>
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: var(--input-bg);
+        color: var(--text-color);
+        box-sizing: border-box;
+    }
+</style>
+{% endblock %}

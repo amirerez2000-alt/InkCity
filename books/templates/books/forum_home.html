@@ -8,7 +8,7 @@
     
     {% for category in categories %}
         <div style="border: 1px solid var(--border-color); padding: 15px; margin-bottom: 15px; border-radius: 6px; background: var(--nav-bg);">
-            <h3 style="margin-top: 0;"><a href="{% url 'category_detail' category.id %}">{{ category.name }}</a></h3>
+            <h3 style="margin-top: 0;"><a class="category-link" href="{% url 'category_detail' category.id %}">{{ category.name }}</a></h3>
             <p style="color: var(--text-color); opacity: 0.8;">{{ category.description }}</p>
             <span style="font-size: 0.85em; opacity: 0.6;">אשכולות בקטגוריה: {{ category.threads.count }}</span>
         </div>

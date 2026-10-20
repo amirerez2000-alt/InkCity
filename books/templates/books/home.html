@@ -111,7 +111,7 @@
             <div class="chat-box">
                 {% for msg in chat_messages %}
                     <div class="chat-msg">
-                        <strong><a href="{% url 'profile_detail' msg.author.username %}">{{ msg.author.username }}</a>:</strong> 
+                        <strong><a class="author-link" href="{% url 'profile_detail' msg.author.username %}">{{ msg.author.username }}</a>:</strong> 
                         <span style="opacity: 0.9;">{{ msg.content }}</span>
                     </div>
                 {% empty %}
@@ -135,7 +135,7 @@
             <h3 style="margin-top: 0;">📢 עדכוני האתר</h3>
             {% for update in updates %}
                 <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color);">
-                    <strong style="color: var(--link-color);">{{ update.title }}</strong>
+                    <strong class="update-title">{{ update.title }}</strong>
                     <div style="font-size: 0.8em; opacity: 0.6; margin-bottom: 5px;">{{ update.created_at|date:"d/m/Y" }}</div>
                     <p style="font-size: 0.9em; margin: 0; opacity: 0.9;">{{ update.content }}</p>
                 </div>

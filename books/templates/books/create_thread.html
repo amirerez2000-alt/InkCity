@@ -8,7 +8,7 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" style="padding: 10px 20px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer;">פרסם דיון</button>
+        <button type="submit" class="btn-primary">פרסם דיון</button>
     </form>
     <p><a href="{% url 'category_detail' category.id %}">ביטול</a></p>
 </div>

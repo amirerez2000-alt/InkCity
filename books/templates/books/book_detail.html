@@ -30,13 +30,13 @@
             <div style="display: flex; gap: 10px; align-items: center;">
                 <form action="{% url 'toggle_kudos' book.id %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" style="padding: 8px 15px; background: transparent; color: var(--text-color); border: 2px solid var(--border-color); border-radius: 4px; cursor: pointer; font-weight: bold;">
+                    <button type="submit" class="btn-outline">
                         {% if user in book.kudos.all %}❤️ הורד קודוס{% else %}🤍 תן קודוס{% endif %} ({{ book.kudos.count }})
                     </button>
                 </form>
 
                 {% if user == book.author %}
-                    <a href="{% url 'edit_book' book.id %}" style="padding: 8px 15px; background: var(--nav-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none; font-weight: bold;">✏️ ערוך פרטי ספר</a>
+                    <a href="{% url 'edit_book' book.id %}" class="btn-outline">✏️ ערוך פרטי ספר</a>
                 {% endif %}
             </div>
         </div>
@@ -46,7 +46,7 @@
         <h2 style="margin: 0;">רשימת פרקים</h2>
 
         {% if user == book.author %}
-            <a href="{% url 'create_chapter' book.id %}" style="padding: 6px 15px; background: var(--link-color); color: white; border-radius: 4px; text-decoration: none; font-size: 0.9em;">+ הוסף פרק חדש</a>
+            <a href="{% url 'create_chapter' book.id %}" class="btn-primary">+ הוסף פרק חדש</a>
         {% endif %}
     </div>
 

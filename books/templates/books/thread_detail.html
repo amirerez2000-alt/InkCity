@@ -28,7 +28,7 @@
             <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" style="padding: 8px 15px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer;">שלח תגובה</button>
+                <button type="submit" class="btn-primary">שלח תגובה</button>
             </form>
         </div>
     {% else %}

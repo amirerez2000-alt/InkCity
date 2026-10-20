@@ -10,7 +10,7 @@
 
     <form method="post" style="margin-top: 30px; display: flex; justify-content: center; gap: 15px;">
         {% csrf_token %}
-        <button type="submit" style="padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">כן, מחק את הספר</button>
+        <button type="submit" class="btn-danger">כן, מחק את הספר</button>
         <a href="{% url 'book_detail' book.id %}" style="padding: 10px 20px; background: var(--nav-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none;">ביטול</a>
     </form>
 </div>

@@ -25,7 +25,7 @@
     .book-section { margin-bottom: 40px; }
     .book-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: thin; }
     .book-card { min-width: 140px; max-width: 140px; background: var(--nav-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
-    .book-cover { width: 100%; height: 200px; object-fit: cover; background: #222; display: flex; align-items: center; justify-content: center; color: white; text-align: center; }
+    .book-cover { width: 100%; height: 200px; object-fit: cover; background: var(--nav-bg); display: flex; align-items: center; justify-content: center; color: var(--text-color); text-align: center; }
     .book-info { padding: 10px; text-align: center; }
     .book-title { font-weight: bold; margin-bottom: 5px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.9em; }
     .book-author { font-size: 0.8em; opacity: 0.8; }
@@ -123,7 +123,7 @@
                 <form method="post" style="display: flex; gap: 5px;">
                     {% csrf_token %}
                     {{ chat_form }}
-                    <button type="submit" name="send_chat" style="padding: 8px 15px; background: var(--link-color); color: white; border: none; border-radius: 4px; cursor: pointer;">שלח</button>
+                    <button type="submit" name="send_chat" class="btn-primary">שלח</button>
                 </form>
             {% else %}
                 <p style="font-size: 0.85em;"><a href="{% url 'login' %}">התחבר</a> כדי לכתוב בצ'אט.</p>

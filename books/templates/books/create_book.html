@@ -1,15 +1,14 @@
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head><title>פרסם ספר חדש</title><style>body { font-family: Arial; margin: 40px; background: #f9f9f9; } .box { background: white; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; } input, textarea { width: 100%; margin-bottom: 15px; padding: 10px; }</style></head>
-<body>
-    <div class="box">
-        <h2>פרסום ספר חדש בארת 📚</h2>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" style="padding: 10px 20px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer;">פרסם ספר</button>
-        </form>
-        <p><a href="{% url 'home' %}">ביטול וחזרה</a></p>
-    </div>
-</body>
-</html>
+{% extends 'books/base.html' %}
+{% load static %}
+{% block title %}פרסם ספר חדש{% endblock %}
+{% block content %}
+<div class="container">
+    <h2>פרסום ספר חדש בארת 📚</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-primary">פרסם ספר</button>
+    </form>
+    <p><a href="{% url 'home' %}">ביטול וחזרה</a></p>
+</div>
+{% endblock %}

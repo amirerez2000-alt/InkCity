@@ -23,6 +23,11 @@ repo_url.txt
 capture_ui.py
 screenshots/
 
+# CI — the current GitHub token lacks the "workflow" scope, so GitHub
+# refuses pushes that add or modify workflow files. The file lives on
+# disk; remove this line once a token with the workflow scope is used.
+.github/workflows/
+
 # Database — the local SQLite file is not in version control.
 # The dev database is a throwaway; production uses PostgreSQL.
 db.sqlite3

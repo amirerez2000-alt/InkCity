@@ -1,77 +1,146 @@
 {% extends 'books/base.html' %}
+{% load static %}
 
-{% block title %}פרק {{ chapter.chapter_number }}: {{ chapter.title }} - {{ chapter.book.title }}{% endblock %}
+{% block title %}פרק {{ chapter.chapter_number }}: {{ chapter.title }} — {{ chapter.book.title }} | InkCity{% endblock %}
+{% block description %}פרק {{ chapter.chapter_number }} מתוך הספר {{ chapter.book.title }}.{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 700px;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <a href="{% url 'book_detail' chapter.book.id %}">← חזרה לספר: {{ chapter.book.title }}</a>
+<div class="container container-narrow chapter-page">
+
+    <div class="chapter-topbar">
+        <a href="{% url 'book_detail' chapter.book.id %}"><span aria-hidden="true">←</span> חזרה לספר: {{ chapter.book.title }}</a>
 
         {% if user == chapter.book.author %}
-            <div style="display: flex; gap: 10px; font-size: 0.9em;">
-                <a href="{% url 'edit_chapter' chapter.book.id chapter.chapter_number %}" style="padding: 4px 10px; background: var(--nav-bg); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none; color: var(--text-color);">✏️ ערוך פרק</a>
-                <a href="{% url 'delete_chapter' chapter.book.id chapter.chapter_number %}" class="btn-danger btn-sm">🗑️ מחק פרק</a>
-            </div>
+        <div class="chapter-actions">
+            <a href="{% url 'edit_chapter' chapter.book.id chapter.chapter_number %}" class="btn-outline btn-sm"><span aria-hidden="true">✏️</span> ערוך פרק</a>
+            <a href="{% url 'delete_chapter' chapter.book.id chapter.chapter_number %}" class="btn-danger btn-sm"><span aria-hidden="true">🗑️</span> מחק פרק</a>
+        </div>
         {% endif %}
     </div>
 
-    <h1 style="text-align: center; margin-top: 20px;">פרק {{ chapter.chapter_number }}: {{ chapter.title }}</h1>
+    <h1 class="chapter-title">פרק {{ chapter.chapter_number }}: {{ chapter.title }}</h1>
 
     <!-- כפתורי ניווט עליונים -->
-    <div style="display: flex; justify-content: space-between; margin: 30px 0; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+    <nav class="chapter-nav" aria-label="ניווט בין פרקים">
         {% if prev_chapter %}
-            <a href="{% url 'chapter_detail' chapter.book.id prev_chapter.chapter_number %}" style="padding: 8px 15px; background: var(--nav-bg); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none; color: var(--text-color);">&rarr; פרק {{ prev_chapter.chapter_number }}</a>
-        {% else %}<div></div>{% endif %}
+        <a href="{% url 'chapter_detail' chapter.book.id prev_chapter.chapter_number %}" class="btn-outline">הפרק הקודם: {{ prev_chapter.chapter_number }}</a>
+        {% endif %}
 
         {% if next_chapter %}
-            <a href="{% url 'chapter_detail' chapter.book.id next_chapter.chapter_number %}" class="btn-outline">פרק הבא &larr;</a>
-        {% else %}<div></div>{% endif %}
-    </div>
+        <a href="{% url 'chapter_detail' chapter.book.id next_chapter.chapter_number %}" class="btn-outline">הפרק הבא: {{ next_chapter.chapter_number }}</a>
+        {% endif %}
+    </nav>
 
     <!-- תוכן הפרק -->
-    <div style="font-size: 1.1em; line-height: 1.8;">
+    <div class="chapter-content">
         {{ chapter.content|linebreaks }}
     </div>
 
     <!-- כפתורי ניווט תחתונים -->
-    <div style="display: flex; justify-content: space-between; margin: 30px 0; padding-top: 15px; border-top: 1px solid var(--border-color);">
+    <nav class="chapter-nav" aria-label="ניווט בין פרקים">
         {% if prev_chapter %}
-            <a href="{% url 'chapter_detail' chapter.book.id prev_chapter.chapter_number %}" style="padding: 8px 15px; background: var(--nav-bg); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none; color: var(--text-color);">&rarr; פרק {{ prev_chapter.chapter_number }}</a>
-        {% else %}<div></div>{% endif %}
-
-        {% if next_chapter %}
-            <a href="{% url 'chapter_detail' chapter.book.id next_chapter.chapter_number %}" class="btn-outline">פרק הבא &larr;</a>
-        {% else %}<div></div>{% endif %}
-    </div>
-
-    <!-- אזור תגובות -->
-    <div style="margin-top: 50px; background: var(--nav-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
-        <h3 style="margin-top: 0;">💬 תגובות ({{ comments.count }})</h3>
-
-        {% if user.is_authenticated %}
-            <form action="{% url 'add_comment' chapter.book.id chapter.chapter_number %}" method="post" style="margin-bottom: 20px;">
-                {% csrf_token %}
-                {{ comment_form.content }}
-                <button type="submit" class="btn-primary">פרסם תגובה</button>
-            </form>
-        {% else %}
-            <p><a href="{% url 'login' %}">התחבר</a> כדי להשאיר תגובה.</p>
+        <a href="{% url 'chapter_detail' chapter.book.id prev_chapter.chapter_number %}" class="btn-outline">הפרק הקודם: {{ prev_chapter.chapter_number }}</a>
         {% endif %}
 
-        {% for comment in comments %}
-            <div style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+        {% if next_chapter %}
+        <a href="{% url 'chapter_detail' chapter.book.id next_chapter.chapter_number %}" class="btn-outline">הפרק הבא: {{ next_chapter.chapter_number }}</a>
+        {% endif %}
+    </nav>
+
+    <!-- אזור תגובות -->
+    <section class="comments-section" aria-labelledby="comments-heading">
+        <h2 id="comments-heading"><span aria-hidden="true">💬</span> תגובות (<span class="count">{{ comments_total }}</span>)</h2>
+
+        {% if user.is_authenticated %}
+        <form action="{% url 'add_comment' chapter.book.id chapter.chapter_number %}" method="post" class="comment-form">
+            {% csrf_token %}
+            <label for="comment-content" class="sr-only">כתוב תגובה</label>
+            {{ comment_form.content }}
+            {% if comment_form.content.errors %}
+            <div class="errorlist" role="alert">{{ comment_form.content.errors }}</div>
+            {% endif %}
+            <button type="submit" class="btn-primary">פרסם תגובה</button>
+        </form>
+        {% else %}
+        <p><a href="{% url 'login' %}">התחבר</a> כדי להשאיר תגובה.</p>
+        {% endif %}
+
+        <div class="comment-list" aria-live="polite">
+            {% for comment in comments %}
+            <article class="comment-item">
+                <header class="comment-header">
                     {% if comment.author.profile.avatar %}
-                        <img src="{{ comment.author.profile.avatar.url }}" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color);">
+                    <img src="{{ comment.author.profile.avatar.url }}" class="avatar avatar-sm" alt="תמונת פרופיל של {{ comment.author.username }}" width="35" height="35" loading="lazy">
+                    {% else %}
+                    <img src="{% static 'inkcity/profile-default.png' %}" class="avatar avatar-sm" alt="תמונת פרופיל של {{ comment.author.username }}" width="35" height="35" loading="lazy">
                     {% endif %}
-                    <strong><a href="{% url 'profile_detail' comment.author.username %}">{{ comment.author.username }}</a></strong>
-                    <span style="opacity: 0.7; font-size: 0.85em;">• {{ comment.created_at|date:"d/m/Y H:i" }}</span>
-                </div>
-                <p style="margin: 0;">{{ comment.content|linebreaks }}</p>
+                    <strong><a class="author-link" href="{% url 'profile_detail' comment.author.username %}">{{ comment.author.username }}</a></strong>
+                    <time class="thread-meta" datetime="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"j F Y, H:i" }}</time>
+                </header>
+                <div class="comment-body">{{ comment.content|linebreaks }}</div>
+            </article>
+            {% empty %}
+            <div class="empty-state">
+                <h3>עדיין אין תגובות לפרק הזה</h3>
+                <p>היו הראשון שמגיבים.</p>
             </div>
-        {% empty %}
-            <p style="opacity: 0.7; text-align: center;">עדיין אין תגובות לפרק זה.</p>
-        {% endfor %}
-    </div>
+            {% endfor %}
+        </div>
+
+        {% include "books/partials/pagination.html" with page=comments_page %}
+    </section>
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .chapter-page { max-width: 720px; }
+    .chapter-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .chapter-title { text-align: center; margin-top: 20px; }
+    .chapter-nav {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 30px 0;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .chapter-nav:last-of-type {
+        padding-top: 15px;
+        padding-bottom: 0;
+        border-top: 1px solid var(--border-color);
+        border-bottom: none;
+    }
+    .chapter-content { font-size: 1.08em; line-height: 1.85; overflow-wrap: break-word; }
+    .comments-section {
+        margin-top: 50px;
+        background: var(--nav-bg);
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+    .comments-section h2 { font-size: 1.1em; margin-top: 0; }
+    .comment-form { margin-bottom: 20px; }
+    .comment-item {
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+    }
+    .comment-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+    }
+    .comment-body { overflow-wrap: break-word; }
+</style>
+{% endblock extra_head %}

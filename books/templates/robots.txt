@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /accounts/
+Disallow: /profile/edit/
+Disallow: /notifications/
+Disallow: /following/
+Disallow: /create-book/
+Disallow: /search/
+
+Sitemap: /sitemap.xml

@@ -1,17 +1,27 @@
 {% extends 'books/base.html' %}
 
-{% block title %}אישור מחיקת ספר{% endblock %}
+{% block title %}מחיקת ספר — InkCity{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 500px; text-align: center;">
-    <h2 style="color: #e74c3c;">⚠️ האם אתה בטוח שברצונך למחוק ספר זה?</h2>
-    <p>אתה עומד למחוק את <strong>ספר {{ book.title }}</strong>.</p>
-    <p style="opacity: 0.7; font-size: 0.9em;">פעולה זו היא סופית ולא ניתן לבטל אותה.</p>
+<div class="container container-narrow confirm-card" role="alertdialog" aria-labelledby="confirm-heading" aria-describedby="confirm-desc">
+    <h1 id="confirm-heading"><span aria-hidden="true">⚠️</span> האם אתה בטוח?</h1>
+    <p id="confirm-desc">
+        אתה עומד למחוק את הספר ״<strong>{{ book.title }}</strong>״.
+        הפעולה מסתירה את הספר ואת הפרקים שלו מהאתר, וניתן לשחזר אותם דרך הניהול.
+    </p>
 
-    <form method="post" style="margin-top: 30px; display: flex; justify-content: center; gap: 15px;">
+    <form method="post" class="form-actions">
         {% csrf_token %}
         <button type="submit" class="btn-danger">כן, מחק את הספר</button>
-        <a href="{% url 'book_detail' book.id %}" style="padding: 10px 20px; background: var(--nav-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none;">ביטול</a>
+        <a href="{% url 'book_detail' book.id %}" class="btn-outline">ביטול</a>
     </form>
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .confirm-card { max-width: 480px; text-align: center; }
+    .confirm-card h1 { color: var(--danger-text); }
+    .form-actions { display: flex; justify-content: center; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+</style>
+{% endblock extra_head %}

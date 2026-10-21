@@ -1,14 +1,55 @@
 {% extends 'books/base.html' %}
 {% load static %}
-{% block title %}פרסם ספר חדש{% endblock %}
+
+{% block title %}פרסם ספר חדש — InkCity{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h2>פרסום ספר חדש בארת 📚</h2>
-    <form method="post" enctype="multipart/form-data">
+<div class="container container-narrow">
+    <h1><span aria-hidden="true">✍️</span> פרסום ספר חדש</h1>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn-primary">פרסם ספר</button>
+        {% if form.non_field_errors %}
+        <div class="errorlist" role="alert">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="field">
+            <label for="id_title">כותרת הספר</label>
+            {{ form.title }}
+            {% if form.title.errors %}<div class="errorlist" role="alert">{{ form.title.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_summary">תקציר</label>
+            {{ form.summary }}
+            <span class="helptext">{{ form.summary.help_text }}</span>
+            {% if form.summary.errors %}<div class="errorlist" role="alert">{{ form.summary.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_cover">כריכת הספר</label>
+            {{ form.cover }}
+            <span class="helptext">{{ form.cover.help_text }}</span>
+            {% if form.cover.errors %}<div class="errorlist" role="alert">{{ form.cover.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_status">מצב פרסום</label>
+            {{ form.status }}
+            {% if form.status.errors %}<div class="errorlist" role="alert">{{ form.status.errors }}</div>{% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">פרסם ספר</button>
+            <a href="{% url 'home' %}" class="btn-outline">ביטול</a>
+        </div>
     </form>
-    <p><a href="{% url 'home' %}">ביטול וחזרה</a></p>
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .field { margin-bottom: 14px; }
+    .form-actions { display: flex; gap: 10px; align-items: center; }
+</style>
+{% endblock extra_head %}

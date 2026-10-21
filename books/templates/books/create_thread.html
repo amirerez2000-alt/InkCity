@@ -1,15 +1,41 @@
 {% extends 'books/base.html' %}
+{% load static %}
 
-{% block title %}פתח דיון חדש - {{ category.name }}{% endblock %}
+{% block title %}פתיחת דיון ב-{{ category.name }} — InkCity{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 600px;">
-    <h2>פתיחת דיון חדש בקטגוריית "{{ category.name }}"</h2>
-    <form method="post">
+<div class="container container-narrow">
+    <h1>פתיחת דיון חדש ב״{{ category.name }}״</h1>
+
+    <form method="post" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn-primary">פרסם דיון</button>
+        {% if form.non_field_errors %}
+        <div class="errorlist" role="alert">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="field">
+            <label for="id_title">כותרת הדיון</label>
+            {{ form.title }}
+            {% if form.title.errors %}<div class="errorlist" role="alert">{{ form.title.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_content">תוכן ההודעה</label>
+            {{ form.content }}
+            {% if form.content.errors %}<div class="errorlist" role="alert">{{ form.content.errors }}</div>{% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">פרסם דיון</button>
+            <a href="{% url 'category_detail' category.id %}" class="btn-outline">ביטול</a>
+        </div>
     </form>
-    <p><a href="{% url 'category_detail' category.id %}">ביטול</a></p>
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .field { margin-bottom: 14px; }
+    .form-actions { display: flex; gap: 10px; align-items: center; }
+</style>
+{% endblock extra_head %}

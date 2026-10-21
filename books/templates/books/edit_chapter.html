@@ -1,20 +1,49 @@
 {% extends 'books/base.html' %}
+{% load static %}
 
-{% block title %}עריכת פרק {{ chapter.chapter_number }}: {{ chapter.title }}{% endblock %}
+{% block title %}עריכת פרק: {{ chapter.title }} — InkCity{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 700px;">
-    <a href="{% url 'chapter_detail' chapter.book.id chapter.chapter_number %}">← חזרה לפרק</a>
-    <h1 style="margin-top: 15px;">✏️ עריכת פרק {{ chapter.chapter_number }}: {{ chapter.title }}</h1>
+<div class="container">
+    <h1><span aria-hidden="true">✏️</span> עריכת פרק: {{ chapter.title }}</h1>
+    <p class="thread-meta">בספר ״{{ book.title }}״</p>
 
-    <form method="post" style="margin-top: 20px;">
+    <form method="post" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
+        {% if form.non_field_errors %}
+        <div class="errorlist" role="alert">{{ form.non_field_errors }}</div>
+        {% endif %}
 
-        <div style="margin-top: 25px; display: flex; gap: 10px;">
-            <button type="submit" class="btn-primary">שמור שינויים</button>
-            <a href="{% url 'chapter_detail' chapter.book.id chapter.chapter_number %}" style="padding: 10px 20px; background: var(--nav-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none;">ביטול</a>
+        <div class="field">
+            <label for="id_chapter_number">מספר פרק</label>
+            {{ form.chapter_number }}
+            {% if form.chapter_number.errors %}<div class="errorlist" role="alert">{{ form.chapter_number.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_title">שם הפרק</label>
+            {{ form.title }}
+            {% if form.title.errors %}<div class="errorlist" role="alert">{{ form.title.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_content">תוכן הפרק</label>
+            {{ form.content }}
+            <span class="helptext">{{ form.content.help_text }}</span>
+            {% if form.content.errors %}<div class="errorlist" role="alert">{{ form.content.errors }}</div>{% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">שמור שינויים בפרק</button>
+            <a href="{% url 'chapter_detail' book.id chapter.chapter_number %}" class="btn-outline">ביטול</a>
         </div>
     </form>
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .field { margin-bottom: 14px; }
+    .form-actions { display: flex; gap: 10px; align-items: center; }
+</style>
+{% endblock extra_head %}

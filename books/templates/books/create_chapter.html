@@ -1,14 +1,48 @@
 {% extends 'books/base.html' %}
 {% load static %}
-{% block title %}הוספת פרק ל-{{ book.title }}{% endblock %}
+
+{% block title %}הוספת פרק ל-{{ book.title }} — InkCity{% endblock %}
+
 {% block content %}
 <div class="container">
-    <h2>הוספת פרק חדש ל"{{ book.title }}"</h2>
-    <form method="post">
+    <h1>הוספת פרק חדש ל״{{ book.title }}״</h1>
+
+    <form method="post" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn-primary">פרסם פרק</button>
+        {% if form.non_field_errors %}
+        <div class="errorlist" role="alert">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="field">
+            <label for="id_chapter_number">מספר פרק</label>
+            {{ form.chapter_number }}
+            {% if form.chapter_number.errors %}<div class="errorlist" role="alert">{{ form.chapter_number.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_title">שם הפרק</label>
+            {{ form.title }}
+            {% if form.title.errors %}<div class="errorlist" role="alert">{{ form.title.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_content">תוכן הפרק</label>
+            {{ form.content }}
+            <span class="helptext">{{ form.content.help_text }}</span>
+            {% if form.content.errors %}<div class="errorlist" role="alert">{{ form.content.errors }}</div>{% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">פרסם פרק</button>
+            <a href="{% url 'book_detail' book.id %}" class="btn-outline">ביטול וחזרה לספר</a>
+        </div>
     </form>
-    <p><a href="{% url 'book_detail' book.id %}">ביטול וחזרה לספר</a></p>
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .field { margin-bottom: 14px; }
+    .form-actions { display: flex; gap: 10px; align-items: center; }
+</style>
+{% endblock extra_head %}

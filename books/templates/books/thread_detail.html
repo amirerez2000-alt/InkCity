@@ -1,38 +1,87 @@
 {% extends 'books/base.html' %}
+{% load static %}
 
-{% block title %}{{ thread.title }} - InkCity{% endblock %}
+{% block title %}{{ thread.title }} — InkCity{% endblock %}
+{% block description %}דיון בקטגוריית {{ thread.category.name }}.{% endblock %}
 
 {% block content %}
 <div class="container">
-    <a href="{% url 'category_detail' thread.category.id %}">← חזרה לקטגוריית {{ thread.category.name }}</a>
-    <h2>{{ thread.title }}</h2>
+    <a href="{% url 'category_detail' thread.category.id %}"><span aria-hidden="true">←</span> חזרה לקטגוריית {{ thread.category.name }}</a>
+    <h1>{{ thread.title }}</h1>
+    <p class="thread-meta">
+        פתח על ידי <a class="author-link" href="{% url 'profile_detail' thread.author.username %}">{{ thread.author.username }}</a>
+        · <span class="count">{{ posts_total }}</span> הודעות
+    </p>
 
     <!-- רשימת הודעות -->
-    {% for post in posts %}
-        <div style="border: 1px solid var(--border-color); padding: 15px; border-radius: 6px; margin-bottom: 15px; background: var(--bg-color);">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+    <div class="post-list" aria-live="polite">
+        {% for post in posts %}
+        <article class="post-item post-card">
+            <header class="post-header">
                 {% if post.author.profile.avatar %}
-                    <img src="{{ post.author.profile.avatar.url }}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
+                <img src="{{ post.author.profile.avatar.url }}" class="avatar avatar-sm" alt="תמונת פרופיל של {{ post.author.username }}" width="30" height="30" loading="lazy">
+                {% else %}
+                <img src="{% static 'inkcity/profile-default.png' %}" class="avatar avatar-sm" alt="תמונת פרופיל של {{ post.author.username }}" width="30" height="30" loading="lazy">
                 {% endif %}
-                <strong><a href="{% url 'profile_detail' post.author.username %}">{{ post.author.username }}</a></strong>
-                <span style="font-size: 0.8em; opacity: 0.7;">• {{ post.created_at|date:"d/m/Y H:i" }}</span>
-            </div>
-            <p style="margin: 0;">{{ post.content|linebreaks }}</p>
+                <strong><a class="author-link" href="{% url 'profile_detail' post.author.username %}">{{ post.author.username }}</a></strong>
+                <time class="thread-meta" datetime="{{ post.created_at|date:'c' }}">{{ post.created_at|date:"j F Y, H:i" }}</time>
+            </header>
+            <div class="post-body">{{ post.content|linebreaks }}</div>
+        </article>
+        {% empty %}
+        <div class="empty-state">
+            <h3>אין עדיין הודעות בדיון הזה</h3>
+            <p>היו הראשון שכותבים.</p>
         </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
+
+    {% include "books/partials/pagination.html" with page=posts_page %}
 
     <!-- טופס תגובה -->
     {% if user.is_authenticated %}
-        <div style="margin-top: 30px;">
-            <h4>הוסף תגובה:</h4>
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn-primary">שלח תגובה</button>
-            </form>
-        </div>
+    <section class="reply-form" aria-labelledby="reply-heading">
+        <h2 id="reply-heading">הוסף תגובה</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+            <div class="errorlist" role="alert">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <div class="field">
+                <label for="id_content" class="sr-only">תוכן התגובה</label>
+                {{ form.content }}
+                {% if form.content.errors %}<div class="errorlist" role="alert">{{ form.content.errors }}</div>{% endif %}
+            </div>
+            <button type="submit" class="btn-primary">שלח תגובה</button>
+        </form>
+    </section>
     {% else %}
-        <p><a href="{% url 'login' %}">התחבר</a> כדי להגיב לדיון זה.</p>
+    <p><a href="{% url 'login' %}">התחבר</a> כדי להגיב לדיון זה.</p>
     {% endif %}
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .post-card {
+        border: 1px solid var(--border-color);
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        background: var(--bg-color);
+    }
+    .post-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+        flex-wrap: wrap;
+    }
+    .post-body { overflow-wrap: break-word; }
+    .reply-form { margin-top: 30px; }
+    .reply-form h2 { font-size: 1.1em; }
+    .field { margin-bottom: 14px; }
+</style>
+{% endblock extra_head %}

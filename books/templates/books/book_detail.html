@@ -1,70 +1,143 @@
 {% extends 'books/base.html' %}
 {% load static %}
 
-{% block title %}{{ book.title }} - InkCity{% endblock %}
+{% block title %}{{ book.title }} — InkCity{% endblock %}
+{% block description %}{{ book.summary|striptags|truncatechars:160 }}{% endblock %}
+{% block og_title %}{{ book.title }} — InkCity{% endblock %}
+{% block og_description %}{{ book.summary|striptags|truncatechars:160 }}{% endblock %}
 
 {% block content %}
 <div class="container">
-    <a href="{% url 'home' %}">← חזרה לעמוד הבית</a>
+    <a href="{% url 'home' %}"><span aria-hidden="true">←</span> חזרה לעמוד הבית</a>
 
-    <div style="display: flex; gap: 20px; margin-top: 20px; margin-bottom: 30px; flex-wrap: wrap;">
+    <div class="book-header">
         {% if book.cover %}
-            <img src="{{ book.cover.url }}" style="width: 180px; height: 260px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color);">
+        <img src="{{ book.cover.url }}" class="book-header-cover" alt="כריכת הספר {{ book.title }}" width="180" height="260">
         {% else %}
-            <img src="{% static 'inkcity/cover-default.png' %}" style="width: 180px; height: 260px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color);" alt="Cover placeholder">
+        <img src="{% static 'inkcity/cover-default.png' %}" class="book-header-cover" alt="כריכת הספר {{ book.title }}" width="180" height="260">
         {% endif %}
 
-        <div style="flex: 1; min-width: 250px;">
-            <h1 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
+        <div class="book-header-info">
+            <h1>
                 {{ book.title }}
                 {% if book.status == 'draft' %}
-                    <span style="font-size: 0.5em; background: #e74c3c; color: white; padding: 3px 8px; border-radius: 4px; font-weight: normal;">🔒 טיוטה</span>
+                <span class="badge"><span aria-hidden="true">🔒</span> טיוטה</span>
                 {% endif %}
             </h1>
             <p>מאת: <a class="author-link" href="{% url 'profile_detail' book.author.username %}">{{ book.author.username }}</a></p>
 
-            <div style="background: var(--nav-bg); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 15px;">
+            <div class="book-summary">
                 {{ book.summary|linebreaks }}
             </div>
 
-            <div style="display: flex; gap: 10px; align-items: center;">
+            <div class="book-actions">
+                {% if user.is_authenticated and book.status == 'published' %}
                 <form action="{% url 'toggle_kudos' book.id %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" class="btn-outline">
-                        {% if user in book.kudos.all %}❤️ הורד קודוס{% else %}🤍 תן קודוס{% endif %} ({{ book.kudos.count }})
+                    <button type="submit" class="btn-outline" aria-pressed="{% if user_has_kudos %}true{% else %}false{% endif %}">
+                        <span aria-hidden="true">{% if user_has_kudos %}❤️{% else %}🤍{% endif %}</span>
+                        {% if user_has_kudos %}הסר קודוס{% else %}תן קודוס{% endif %}
+                        (<span class="count">{{ kudos_count }}</span>)
                     </button>
                 </form>
+                {% endif %}
 
                 {% if user == book.author %}
-                    <a href="{% url 'edit_book' book.id %}" class="btn-outline">✏️ ערוך פרטי ספר</a>
+                <a href="{% url 'edit_book' book.id %}" class="btn-outline"><span aria-hidden="true">✏️</span> ערוך פרטי ספר</a>
+                <a href="{% url 'delete_book' book.id %}" class="btn-danger btn-sm"><span aria-hidden="true">🗑️</span> מחק ספר</a>
                 {% endif %}
             </div>
         </div>
     </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
-        <h2 style="margin: 0;">רשימת פרקים</h2>
-
+    <div class="section-header">
+        <h2>רשימת פרקים</h2>
         {% if user == book.author %}
-            <a href="{% url 'create_chapter' book.id %}" class="btn-primary">+ הוסף פרק חדש</a>
+        <a href="{% url 'create_chapter' book.id %}" class="btn-primary">+ הוסף פרק חדש</a>
         {% endif %}
     </div>
 
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-        {% for chapter in book.chapters.all|dictsort:"chapter_number" %}
-            <div style="padding: 12px; background: var(--nav-bg); border: 1px solid var(--border-color); border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
-                <a href="{% url 'chapter_detail' book.id chapter.chapter_number %}" style="font-size: 1.1em; font-weight: bold;">פרק {{ chapter.chapter_number }}: {{ chapter.title }}</a>
+    <div class="chapter-list">
+        {% for chapter in chapters %}
+        <div class="chapter-item">
+            <a href="{% url 'chapter_detail' book.id chapter.chapter_number %}" class="chapter-link">
+                פרק <span class="count">{{ chapter.chapter_number }}</span>: {{ chapter.title }}
+            </a>
 
-                {% if user == book.author %}
-                    <div style="display: flex; gap: 10px; font-size: 0.9em;">
-                        <a href="{% url 'edit_chapter' book.id chapter.chapter_number %}" style="text-decoration: none;">✏️ ערוך</a>
-                        <a href="{% url 'delete_chapter' book.id chapter.chapter_number %}" style="color: #e74c3c; text-decoration: none;">🗑️ מחק</a>
-                    </div>
-                {% endif %}
+            {% if user == book.author %}
+            <div class="chapter-actions">
+                <a href="{% url 'edit_chapter' book.id chapter.chapter_number %}" class="btn-ghost btn-sm"><span aria-hidden="true">✏️</span> ערוך פרק</a>
+                <a href="{% url 'delete_chapter' book.id chapter.chapter_number %}" class="btn-danger btn-sm"><span aria-hidden="true">🗑️</span> מחק פרק</a>
             </div>
+            {% endif %}
+        </div>
         {% empty %}
-            <p style="opacity: 0.7;">עדיין אין פרקים לספר זה.</p>
+        <div class="empty-state">
+            <h3>עדיין אין פרקים לספר הזה</h3>
+            {% if user == book.author %}
+            <p><a href="{% url 'create_chapter' book.id %}" class="btn-primary">כתוב את הפרק הראשון</a></p>
+            {% else %}
+            <p>המחבר עדיין עובד על הספר. חזרו מאוחר יותר.</p>
+            {% endif %}
+        </div>
         {% endfor %}
     </div>
+
+    {% include "books/partials/pagination.html" with page=chapters_page %}
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .book-header {
+        display: flex;
+        gap: 20px;
+        margin-top: 20px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+    .book-header-cover {
+        width: 180px;
+        height: 260px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+    .book-header-info { flex: 1; min-width: 250px; }
+    .book-header-info h1 { margin-top: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .book-summary {
+        background: var(--nav-bg);
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 15px;
+    }
+    .book-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .book-actions form { margin: 0; }
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+        gap: 12px;
+    }
+    .section-header h2 { margin: 0; }
+    .chapter-list { display: flex; flex-direction: column; gap: 10px; }
+    .chapter-item {
+        padding: 12px;
+        background: var(--nav-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .chapter-link { font-size: 1.05em; font-weight: 600; color: var(--text-color); }
+    .chapter-link:hover { text-decoration: underline; }
+    .chapter-actions { display: flex; gap: 8px; font-size: 0.9em; }
+</style>
+{% endblock extra_head %}

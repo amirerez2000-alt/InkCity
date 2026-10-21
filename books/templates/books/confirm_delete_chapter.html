@@ -1,17 +1,27 @@
 {% extends 'books/base.html' %}
 
-{% block title %}אישור מחיקת פרק{% endblock %}
+{% block title %}מחיקת פרק — InkCity{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 500px; text-align: center;">
-    <h2 style="color: #e74c3c;">⚠️ האם אתה בטוח שברצונך למחוק פרק זה?</h2>
-    <p>אתה עומד למחוק את <strong>פרק {{ chapter.chapter_number }}: {{ chapter.title }}</strong> מתוך הספר "<strong>{{ chapter.book.title }}</strong>".</p>
-    <p style="opacity: 0.7; font-size: 0.9em;">פעולה זו היא סופית ולא ניתן לבטל אותה.</p>
+<div class="container container-narrow confirm-card" role="alertdialog" aria-labelledby="confirm-heading" aria-describedby="confirm-desc">
+    <h1 id="confirm-heading"><span aria-hidden="true">⚠️</span> האם אתה בטוח?</h1>
+    <p id="confirm-desc">
+        אתה עומד למחוק את הפרק ״<strong>{{ chapter.title }}</strong>״ מתוך הספר
+        ״<strong>{{ book.title }}</strong>״. הפעולה מסתירה את הפרק מהאתר, וניתן לשחזר אותו דרך הניהול.
+    </p>
 
-    <form method="post" style="margin-top: 30px; display: flex; justify-content: center; gap: 15px;">
+    <form method="post" class="form-actions">
         {% csrf_token %}
         <button type="submit" class="btn-danger">כן, מחק את הפרק</button>
-        <a href="{% url 'chapter_detail' chapter.book.id chapter.chapter_number %}" style="padding: 10px 20px; background: var(--nav-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none;">ביטול</a>
+        <a href="{% url 'chapter_detail' book.id chapter.chapter_number %}" class="btn-outline">ביטול</a>
     </form>
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .confirm-card { max-width: 480px; text-align: center; }
+    .confirm-card h1 { color: var(--danger-text); }
+    .form-actions { display: flex; justify-content: center; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+</style>
+{% endblock extra_head %}

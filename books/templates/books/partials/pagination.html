@@ -1,0 +1,13 @@
+{% if page and page.paginator.num_pages > 1 %}
+<nav class="pagination" aria-label="ניווט בין עמודים">
+    {% if page.has_previous %}
+    <a href="?page={{ page.previous_page_number }}" rel="prev" aria-label="העמוד הקודם">הקודם</a>
+    {% endif %}
+
+    <span class="current" aria-current="page">עמוד <span class="count">{{ page.number }}</span> מתוך <span class="count">{{ page.paginator.num_pages }}</span></span>
+
+    {% if page.has_next %}
+    <a href="?page={{ page.next_page_number }}" rel="next" aria-label="העמוד הבא">הבא</a>
+    {% endif %}
+</nav>
+{% endif %}

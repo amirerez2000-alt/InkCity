@@ -1,34 +1,76 @@
 {% extends 'books/base.html' %}
 
-{% block title %}התראות - InkCity{% endblock %}
+{% block title %}התראות — InkCity{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1>🔔 התראות</h1>
-    
-    {% for notification in notifications %}
-        <div style="padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; gap: 15px; align-items: center; background: {% if not notification.is_read %}var(--nav-bg){% else %}transparent{% endif %};">
-            
+    <div class="section-header">
+        <h1><span aria-hidden="true">🔔</span> התראות</h1>
+        {% if unread_count > 0 %}
+        <form action="{% url 'mark_notifications_read' %}" method="post" class="inline-form">
+            {% csrf_token %}
+            <button type="submit" class="btn-outline btn-sm">סמן הכל כנקראו (<span class="count">{{ unread_count }}</span>)</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="notification-list" aria-live="polite">
+        {% for notification in notifications %}
+        <article class="notification-item{% if not notification.is_read %} is-unread{% endif %}">
             <!-- אייקון לפי סוג ההתראה -->
-            <div style="font-size: 1.5em;">
+            <div class="notification-icon" aria-hidden="true">
                 {% if notification.notification_type == 'new_follower' %}👥
                 {% elif notification.notification_type == 'new_kudos' %}❤️
                 {% elif notification.notification_type == 'new_comment' %}💬
                 {% elif notification.notification_type == 'new_book' or notification.notification_type == 'new_chapter' %}📖
                 {% else %}🔔{% endif %}
             </div>
+            <span class="sr-only">{{ notification.get_notification_type_display }}</span>
 
-            <div>
-                <div>{{ notification.message }}</div>
-                <div style="font-size: 0.8em; opacity: 0.7; margin-top: 5px;">{{ notification.created_at|date:"d/m/Y H:i" }}</div>
+            <div class="notification-body">
+                <p>{{ notification.message }}</p>
+                <time class="thread-meta" datetime="{{ notification.created_at|date:'c' }}">{{ notification.created_at|date:"j F Y, H:i" }}</time>
             </div>
 
             {% if notification.link %}
-                <a href="{{ notification.link }}" style="margin-right: auto; padding: 5px 10px; background: var(--border-color); border-radius: 4px; text-decoration: none; font-size: 0.9em; color: var(--text-color);">צפה</a>
+            <a href="{{ notification.link }}" class="btn-outline btn-sm">צפה בתוכן</a>
             {% endif %}
+        </article>
+        {% empty %}
+        <div class="empty-state">
+            <h3>אין לך התראות כרגע</h3>
+            <p>כשישהיה משהו חדש — תגובה, קודוס או עוקב חדש — תופיע כאן.</p>
         </div>
-    {% empty %}
-        <p style="text-align: center; opacity: 0.7; padding: 30px;">אין לך התראות כרגע.</p>
-    {% endfor %}
+        {% endfor %}
+    </div>
+
+    {% include "books/partials/pagination.html" with page=notifications_page %}
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+    }
+    .section-header h1 { margin: 0; font-size: 1.4em; }
+    .inline-form { display: inline-block; margin: 0; }
+    .notification-item {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .notification-icon { font-size: 1.5em; flex-shrink: 0; }
+    .notification-body { flex: 1; min-width: 0; }
+    .notification-body p { margin: 0; overflow-wrap: break-word; }
+</style>
+{% endblock extra_head %}

@@ -1,0 +1,17 @@
+[Unit]
+Description=InkCity Django application
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/inkcity
+EnvironmentFile=/var/www/inkcity/.env
+ExecStart=/var/www/inkcity/venv/bin/gunicorn inkcitycore.wsgi:application \
+    --bind 127.0.0.1:8000 --workers 3 --timeout 60 --access-logfile - --error-logfile -
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

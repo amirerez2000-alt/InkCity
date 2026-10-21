@@ -1,20 +1,55 @@
 {% extends 'books/base.html' %}
+{% load static %}
 
-{% block title %}עריכת ספר: {{ book.title }}{% endblock %}
+{% block title %}עריכת ספר: {{ book.title }} — InkCity{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 600px;">
-    <a href="{% url 'book_detail' book.id %}">← חזרה לספר</a>
-    <h1 style="margin-top: 15px;">✏️ עריכת ספר: {{ book.title }}</h1>
+<div class="container container-narrow">
+    <h1><span aria-hidden="true">✏️</span> עריכת ספר: {{ book.title }}</h1>
 
-    <form method="post" enctype="multipart/form-data" style="margin-top: 20px;">
+    <form method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
-        
-        <div style="margin-top: 25px; display: flex; gap: 10px;">
-            <button type="submit" class="btn-primary">שמור שינויים</button>
-            <a href="{% url 'book_detail' book.id %}" style="padding: 10px 20px; background: var(--nav-bg); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none;">ביטול</a>
+        {% if form.non_field_errors %}
+        <div class="errorlist" role="alert">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="field">
+            <label for="id_title">כותרת הספר</label>
+            {{ form.title }}
+            {% if form.title.errors %}<div class="errorlist" role="alert">{{ form.title.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_summary">תקציר</label>
+            {{ form.summary }}
+            <span class="helptext">{{ form.summary.help_text }}</span>
+            {% if form.summary.errors %}<div class="errorlist" role="alert">{{ form.summary.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_cover">כריכת הספר</label>
+            {{ form.cover }}
+            <span class="helptext">{{ form.cover.help_text }}</span>
+            {% if form.cover.errors %}<div class="errorlist" role="alert">{{ form.cover.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_status">מצב פרסום</label>
+            {{ form.status }}
+            {% if form.status.errors %}<div class="errorlist" role="alert">{{ form.status.errors }}</div>{% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">שמור שינויים בספר</button>
+            <a href="{% url 'book_detail' book.id %}" class="btn-outline">ביטול</a>
         </div>
     </form>
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .field { margin-bottom: 14px; }
+    .form-actions { display: flex; gap: 10px; align-items: center; }
+</style>
+{% endblock extra_head %}

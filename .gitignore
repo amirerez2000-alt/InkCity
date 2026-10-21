@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+.pytest_cache/
 
 # Virtual environments
 .venv/
@@ -11,9 +12,24 @@ env/
 # Django
 staticfiles/
 *.log
+logs/
 
-# Local environment (secrets)
+# Local environment and secrets
 .env
+*.bak
+repo_url.txt
+
+# Local tooling artefacts
+capture_ui.py
+screenshots/
+
+# Database — the local SQLite file is not in version control.
+# The dev database is a throwaway; production uses PostgreSQL.
+db.sqlite3
+db.sqlite3-journal
+
+# Uploaded user media — binary and user-specific.
+media/
 
 # Editors / OS
 .vscode/

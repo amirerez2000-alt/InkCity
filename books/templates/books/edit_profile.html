@@ -1,15 +1,57 @@
 {% extends 'books/base.html' %}
+{% load static %}
 
-{% block title %}עריכת פרופיל{% endblock %}
+{% block title %}עריכת פרופיל — InkCity{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 600px;">
-    <h2>עריכת פרופיל</h2>
-    <form method="post" enctype="multipart/form-data">
+<div class="container container-narrow">
+    <h1>עריכת פרופיל</h1>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn-primary">שמור שינויים</button>
+        {% if form.non_field_errors %}
+        <div class="errorlist" role="alert">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="field">
+            <label for="id_bio">אודות</label>
+            {{ form.bio }}
+            <span class="helptext">{{ form.bio.help_text }}</span>
+            {% if form.bio.errors %}<div class="errorlist" role="alert">{{ form.bio.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_avatar">תמונת פרופיל</label>
+            {{ form.avatar }}
+            <span class="helptext">{{ form.avatar.help_text }}</span>
+            {% if form.avatar.errors %}<div class="errorlist" role="alert">{{ form.avatar.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_banner">תמונת רקע</label>
+            {{ form.banner }}
+            <span class="helptext">{{ form.banner.help_text }}</span>
+            {% if form.banner.errors %}<div class="errorlist" role="alert">{{ form.banner.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_custom_css">עיצוב אישי (CSS)</label>
+            {{ form.custom_css }}
+            <span class="helptext">{{ form.custom_css.help_text }}</span>
+            {% if form.custom_css.errors %}<div class="errorlist" role="alert">{{ form.custom_css.errors }}</div>{% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">שמור פרופיל</button>
+            <a href="{% url 'profile_detail' user.username %}" class="btn-outline">ביטול</a>
+        </div>
     </form>
-    <p><a href="{% url 'profile_detail' user.username %}">ביטול</a></p>
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .field { margin-bottom: 14px; }
+    .form-actions { display: flex; gap: 10px; align-items: center; }
+</style>
+{% endblock extra_head %}

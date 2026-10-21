@@ -1,0 +1,18 @@
+{% extends 'books/base.html' %}
+
+{% block title %}התנתקות מ-InkCity{% endblock %}
+
+{% block content %}
+<div class="container container-narrow auth-card">
+    <h1>התנתקת</h1>
+    <p>התנתקת בהצלחה מ-InkCity.</p>
+    <p><a href="{% url 'login' %}" class="btn-primary">התחבר שוב</a></p>
+    <p><a href="{% url 'home' %}">חזרה לעמוד הבית</a></p>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .auth-card { max-width: 420px; text-align: center; }
+</style>
+{% endblock extra_head %}

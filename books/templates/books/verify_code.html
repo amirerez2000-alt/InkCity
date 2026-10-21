@@ -1,26 +1,64 @@
 {% extends 'books/base.html' %}
 
-{% block title %}אימות חשבון - InkCity{% endblock %}
+{% block title %}אימות חשבון — InkCity{% endblock %}
 
 {% block content %}
-<div class="container" style="max-width: 450px; text-align: center;">
-    <h1 style="margin-top: 0;">🔑 אימות חשבון</h1>
-    <p>שלחנו קוד אימות בן 6 ספרות לכתובת המייל:</p>
-    <p style="font-weight: bold; font-size: 1.1em; color: var(--link-color); margin-top: -5px;">{{ email }}</p>
+<div class="container container-narrow verify-card">
+    <h1><span aria-hidden="true">🔑</span> אימות חשבון</h1>
+    <p>שלחנו קוד אימות בן 6&nbsp;ספרות לכתובת המייל:</p>
+    <p class="verify-email">{{ email }}</p>
 
-    <form method="post" style="margin-top: 25px;">
+    <form method="post" class="verify-form">
         {% csrf_token %}
-        <div style="margin-bottom: 20px;">
-            <input type="text" name="code" placeholder="123456" maxlength="6" required 
-                   style="font-size: 2em; letter-spacing: 10px; text-align: center; width: 230px; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--input-bg); color: var(--text-color); outline: none;">
+        <div class="field">
+            <label for="id_code" class="sr-only">קוד האימות</label>
+            <input type="text" id="id_code" name="code" placeholder="123456"
+                   inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required
+                   autocomplete="one-time-code" autocapitalize="off" spellcheck="false"
+                   aria-describedby="code-help">
+            <span class="helptext" id="code-help">הזן את 6 הספרות שקיבלת במייל.</span>
         </div>
 
-        <button type="submit" class="btn-primary">אימות חשבון</button>
+        <button type="submit" class="btn-primary">אמת את הקוד</button>
     </form>
 
-    <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px; font-size: 0.9em;">
-        <span>לא קיבלת את הקוד או שהתוקף פג? </span>
-        <a href="{% url 'resend_code' %}" style="font-weight: bold;">לחץ כאן לשליחה מחדש</a>
+    <div class="verify-resend">
+        <span>לא קיבלת את הקוד או שתוקפו פג?</span>
+        <form action="{% url 'resend_code' %}" method="post" class="inline-form">
+            {% csrf_token %}
+            <button type="submit" class="btn-outline btn-sm">שלח קוד חדש</button>
+        </form>
+        {% if attempts_left < 3 %}
+        <p class="thread-meta">נותרו {{ attempts_left }} ניסיונות.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .verify-card { max-width: 450px; text-align: center; }
+    .verify-email { font-weight: 700; font-size: 1.05em; color: var(--link-color); overflow-wrap: break-word; }
+    .verify-form { margin-top: 25px; }
+    .verify-form input {
+        font-size: 2em;
+        letter-spacing: 10px;
+        text-align: center;
+        width: 230px;
+        padding: 10px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+    }
+    .verify-resend {
+        margin-top: 25px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 15px;
+        font-size: 0.9em;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+    }
+    .inline-form { display: inline-block; margin: 0; }
+</style>
+{% endblock extra_head %}

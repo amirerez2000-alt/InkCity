@@ -1,15 +1,46 @@
 {% extends 'books/base.html' %}
 {% load static %}
+
 {% block title %}התחברות ל-InkCity{% endblock %}
+{% block description %}התחברות לחשבון InkCity שלך.{% endblock %}
+
 {% block content %}
-<div class="card" style="max-width: 400px; margin: 40px auto;">
-    <h2 style="text-align:center;">התחברות</h2>
-    <form method="post">
+<div class="container container-narrow auth-card">
+    <h1>התחברות</h1>
+
+    {% if form.non_field_errors %}
+    <div class="errorlist" role="alert">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <form method="post" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn">היכנס</button>
+
+        <div class="field">
+            <label for="id_username">שם משתמש</label>
+            {{ form.username }}
+            {% if form.username.errors %}<div class="errorlist" role="alert">{{ form.username.errors }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="id_password">סיסמה</label>
+            {{ form.password }}
+            {% if form.password.errors %}<div class="errorlist" role="alert">{{ form.password.errors }}</div>{% endif %}
+        </div>
+
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" class="btn-primary">התחבר</button>
     </form>
-    <p>עוד אין לך משתמש? <a href="{% url 'register' %}">הרשם כאן</a></p>
+
+    <p><a href="{% url 'password_reset' %}">שכחת את הסיסמה?</a></p>
+    <p>עדיין אין לך משתמש? <a href="{% url 'register' %}">הרשם כאן</a></p>
     <p><a href="{% url 'home' %}">חזרה לעמוד הבית</a></p>
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .auth-card { max-width: 420px; }
+    .auth-card h1 { text-align: center; }
+    .field { margin-bottom: 14px; }
+</style>
+{% endblock extra_head %}

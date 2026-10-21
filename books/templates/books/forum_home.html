@@ -1,19 +1,37 @@
 {% extends 'books/base.html' %}
 
-{% block title %}פורומים - InkCity{% endblock %}
+{% block title %}הפורומים של InkCity{% endblock %}
+{% block description %}הצטרפו לדיונים בפורומים של InkCity.{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1>💬 הפורומים של InkCity</h1>
-    
+    <h1><span aria-hidden="true">💬</span> הפורומים של InkCity</h1>
+
     {% for category in categories %}
-        <div style="border: 1px solid var(--border-color); padding: 15px; margin-bottom: 15px; border-radius: 6px; background: var(--nav-bg);">
-            <h3 style="margin-top: 0;"><a class="category-link" href="{% url 'category_detail' category.id %}">{{ category.name }}</a></h3>
-            <p style="color: var(--text-color); opacity: 0.8;">{{ category.description }}</p>
-            <span style="font-size: 0.85em; opacity: 0.6;">אשכולות בקטגוריה: {{ category.threads.count }}</span>
-        </div>
+    <article class="category-card">
+        <h2><a class="category-link" href="{% url 'category_detail' category.id %}">{{ category.name }}</a></h2>
+        {% if category.description %}<p>{{ category.description }}</p>{% endif %}
+        <p class="thread-meta"><span class="count">{{ category.thread_count }}</span> אשכולות בקטגוריה</p>
+    </article>
     {% empty %}
-        <p>עדיין לא הוגדרו קטגוריות בפורום.</p>
+    <div class="empty-state">
+        <h3>עדיין לא הוגדרו קטגוריות בפורום</h3>
+        <p>חזרו בקרוב — הקהילה עדיין בהקמה.</p>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}
+
+{% block extra_head %}
+<style>
+    .category-card {
+        border: 1px solid var(--border-color);
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+        background: var(--nav-bg);
+    }
+    .category-card h2 { margin-top: 0; font-size: 1.15em; }
+    .category-card p { margin: 6px 0; }
+</style>
+{% endblock extra_head %}

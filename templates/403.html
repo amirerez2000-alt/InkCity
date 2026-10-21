@@ -1,0 +1,19 @@
+{% extends 'books/base.html' %}
+
+{% block title %}אין הרשאה — InkCity{% endblock %}
+
+{% block content %}
+<div class="container container-narrow error-page">
+    <h1>אין הרשאה</h1>
+    <p>אין לך הרשאה לצפות בדף הזה.</p>
+    <p>
+        <a href="{% url 'home' %}" class="btn-primary">חזרה לעמוד הבית</a>
+    </p>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .error-page { max-width: 480px; text-align: center; }
+</style>
+{% endblock extra_head %}

@@ -1,0 +1,10 @@
+{% url 'home' as home_url %}{% url 'forum_home' as forum_url %}{% url 'terms' as terms_url %}{% url 'privacy' as privacy_url %}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url><loc>{{ request.scheme }}://{{ request.get_host }}{{ home_url }}</loc><changefreq>hourly</changefreq><priority>1.0</priority></url>
+    <url><loc>{{ request.scheme }}://{{ request.get_host }}{{ forum_url }}</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+    <url><loc>{{ request.scheme }}://{{ request.get_host }}{{ terms_url }}</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+    <url><loc>{{ request.scheme }}://{{ request.get_host }}{{ privacy_url }}</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+    {% for book in published_books %}<url><loc>{{ request.scheme }}://{{ request.get_host }}{{ book.get_absolute_url }}</loc><lastmod>{{ book.updated_at|date:"Y-m-d" }}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>{% endfor %}
+    {% for thread in published_threads %}<url><loc>{{ request.scheme }}://{{ request.get_host }}{% url 'thread_detail' thread.id %}</loc><lastmod>{{ thread.updated_at|date:"Y-m-d" }}</lastmod><changefreq>weekly</changefreq><priority>0.4</priority></url>{% endfor %}
+</urlset>

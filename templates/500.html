@@ -1,0 +1,19 @@
+{% extends 'books/base.html' %}
+
+{% block title %}אירעה שגיאה — InkCity{% endblock %}
+
+{% block content %}
+<div class="container container-narrow error-page">
+    <h1>אירעה שגיאה</h1>
+    <p>משהו השתבש אצלנו. נסה לרענן את הדף, ואם הבעיה חוזרת אנא חזור מאוחר יותר.</p>
+    <p>
+        <a href="{% url 'home' %}" class="btn-primary">חזרה לעמוד הבית</a>
+    </p>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .error-page { max-width: 480px; text-align: center; }
+</style>
+{% endblock extra_head %}

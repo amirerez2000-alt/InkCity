@@ -1,10 +1,25 @@
-<!DOCTYPE html>
-{% load static %}
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+{% load static %}<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}InkCity{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}InkCity — קהילת הכותבים והקוראים{% endblock %}</title>
+    <meta name="description" content="{% block description %}InkCity היא קהילה ישראלית לכתיבה ולהשמעת ספרים ודיונים.{% endblock %}">
+    <meta name="theme-color" content="#f9f9f9" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+
+    {% block opengraph %}
+    <meta property="og:site_name" content="InkCity">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block og_title %}InkCity — קהילת הכותבים והקוראים{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}קהילה לכתיבה ולהשמעת ספרים ודיונים.{% endblock %}">
+    <meta property="og:locale" content="he_IL">
+    {% endblock opengraph %}
+
+    <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="{% static 'css/inkcity.css' %}">
     <style>
         /* Theme tokens — every colour in static/css/inkcity.css is driven
@@ -17,6 +32,17 @@
             --link-color: #0066cc;
             --nav-bg: #eeeeee;
             --input-bg: #ffffff;
+            --card-shadow: rgba(0, 0, 0, 0.08);
+            --danger-color: #c0392b;
+            --danger-bg: #f8d7da;
+            --danger-text: #721c24;
+            --success-color: #2e7d32;
+            --success-bg: #d4edda;
+            --success-text: #155724;
+            --warning-color: #9a6700;
+            --warning-bg: #fff3cd;
+            --warning-text: #664d03;
+            color-scheme: light;
         }
         [data-theme="dark"] {
             --bg-color: #121212;
@@ -26,63 +52,99 @@
             --link-color: #66b3ff;
             --nav-bg: #252525;
             --input-bg: #1a1a1a;
+            --card-shadow: rgba(0, 0, 0, 0.4);
+            --danger-color: #ff7b72;
+            --danger-bg: #3d1d1d;
+            --danger-text: #ffb4ab;
+            --success-color: #7ee787;
+            --success-bg: #16301c;
+            --success-text: #adf0bd;
+            --warning-color: #e3b341;
+            --warning-bg: #3a2f10;
+            --warning-text: #f2d17c;
+            color-scheme: dark;
         }
     </style>
+    {% block extra_head %}{% endblock extra_head %}
 </head>
 <body>
-{% if messages %}<ul class="messages">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>{% endif %}
+    <a href="#main-content" class="skip-link">דלג לתוכן הראשי</a>
 
-    <div class="navbar">
-        <div class="navbar-left">
-            <a href="{% url 'home' %}" class="navbar-logo" aria-label="InkCity - עמוד הבית">IC</a>
-            <a href="{% url 'home' %}">🏠 עמוד הבית</a>
-            <a href="{% url 'forum_home' %}">💬 פורומים</a>
-
-            <!-- שורת החיפוש -->
-            <form action="{% url 'search' %}" method="get" class="navbar-search">
-                <input type="text" name="q" placeholder="חפש ספרים ודיונים..." value="{{ request.GET.q|default:'' }}" required>
-                <button type="submit" aria-label="חיפוש">🔍</button>
-            </form>
-        </div>
-
-        <div class="navbar-right">
-            <button id="theme-toggle" class="btn-outline" type="button" aria-label="החלף ערכת נושא">🌙</button>
-            {% if user.is_authenticated %}
-                <a href="{% url 'create_book' %}" class="btn-primary">✍️ כתיבת ספר</a>
-                <a href="{% url 'following_list' %}" class="navbar-icon" title="נעקבים" aria-label="נעקבים">👥</a>
-                <a href="{% url 'notifications' %}" class="navbar-icon navbar-bell" title="התראות" aria-label="התראות">
-                    🔔
-                    {% if unread_notifications_count > 0 %}
-                        <span class="notification-badge">{{ unread_notifications_count }}</span>
-                    {% endif %}
-                </a>
-
-                <span class="navbar-greeting">שלום, <a href="{% url 'profile_detail' user.username %}">{{ user.username }}</a></span>
-
-                <form action="{% url 'logout' %}" method="post" class="navbar-form">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{% url 'home' %}">
-                    <button type="submit" class="btn-ghost">התנתק</button>
-                </form>
-
-            {% else %}
-                <a href="{% url 'login' %}">התחבר</a>
-                <a href="{% url 'register' %}" class="btn-primary">הרשמה</a>
-            {% endif %}
-
-        </div>
-    </div>
-
-    <!-- הצגת הודעות מוקפצות (כמו הודעת אישור הרשמה) -->
     {% if messages %}
+    <ul class="messages" role="status" aria-live="polite">
         {% for message in messages %}
-            <div class="alert-message {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
-                {{ message }}
-            </div>
+        <li class="alert-{{ message.tags|default:'info' }}">{{ message }}</li>
         {% endfor %}
+    </ul>
     {% endif %}
 
-    {% block content %}{% endblock %}
+    <header>
+        <div class="navbar">
+            <div class="navbar-left">
+                <a href="{% url 'home' %}" class="navbar-logo" aria-label="InkCity — עמוד הבית">IC</a>
+                <a href="{% url 'home' %}"><span aria-hidden="true">🏠</span> עמוד הבית</a>
+                <a href="{% url 'forum_home' %}"><span aria-hidden="true">💬</span> פורומים</a>
+
+                <!-- שורת החיפוש -->
+                <form action="{% url 'search' %}" method="get" class="navbar-search" role="search">
+                    <label for="navbar-search-input" class="sr-only">חיפוש ספרים ודיונים</label>
+                    <input type="search" id="navbar-search-input" name="q"
+                           placeholder="חפש ספרים ודיונים…"
+                           value="{{ request.GET.q|default:'' }}"
+                           autocomplete="off" spellcheck="false" enterkeyhint="search" required>
+                    <button type="submit" aria-label="חיפוש"><span aria-hidden="true">🔍</span></button>
+                </form>
+            </div>
+
+            <div class="navbar-right">
+                <button id="theme-toggle" class="btn-outline" type="button"
+                        aria-label="החלף ערכת נושא" aria-pressed="false">
+                    <span aria-hidden="true">🌙</span>
+                </button>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'create_book' %}" class="btn-primary"><span aria-hidden="true">✍️</span> כתיבת ספר</a>
+                    <a href="{% url 'following_list' %}" class="navbar-icon" title="נעקבים" aria-label="המשתמשים שאני עוקב אחריהם">
+                        <span aria-hidden="true">👥</span>
+                    </a>
+                    <a href="{% url 'notifications' %}" class="navbar-icon navbar-bell" title="התראות" aria-label="התראות{% if unread_notifications_count > 0 %}, {{ unread_notifications_count }} התראות שלא נקראו{% endif %}">
+                        <span aria-hidden="true">🔔</span>
+                        {% if unread_notifications_count > 0 %}
+                        <span class="notification-badge" aria-hidden="true">{{ unread_notifications_count }}</span>
+                        {% endif %}
+                    </a>
+
+                    <span class="navbar-greeting">שלום, <a href="{% url 'profile_detail' user.username }}">{{ user.username }}</a></span>
+
+                    <form action="{% url 'logout' %}" method="post" class="navbar-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{% url 'home' %}">
+                        <button type="submit" class="btn-ghost">התנתק</button>
+                    </form>
+
+                {% else %}
+                    <a href="{% url 'login' %}">התחבר</a>
+                    <a href="{% url 'register' %}" class="btn-primary">הרשמה</a>
+                {% endif %}
+
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>&copy; {% now "Y" %} InkCity — קהילת הכותבים והקוראים</p>
+            <nav aria-label="קישורי אתר">
+                <a href="{% url 'home' %}">עמוד הבית</a>
+                <a href="{% url 'forum_home' %}">פורומים</a>
+                <a href="{% url 'terms' %}">תנאי שימוש</a>
+                <a href="{% url 'privacy' %}">מדיניות פרטיות</a>
+            </nav>
+        </div>
+    </footer>
 
     <script>
         (function () {
@@ -106,5 +168,6 @@
             });
         })();
     </script>
+    {% block extra_js %}{% endblock extra_js %}
 </body>
 </html>
